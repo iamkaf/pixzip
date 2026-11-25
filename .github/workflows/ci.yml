@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (GCC and Clang)
+    # The image pins the compilers: GCC 13 and Clang 18 on Ubuntu 24.04.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13.16"
+      - run: gcc --version && clang --version
+      - run: gcc -std=c11 -O2 -Wall -Wextra -Werror main.c pixzip.c encode.c lodepng/lodepng.c -o pixzip
+      - run: gcc -std=c11 -Os -Wall -Wextra -Werror -ffreestanding -nostdlib -c pixzip.c -o pixzip.o
+      - run: CC=clang python3 test.py
+      - run: python3 tests/parity.py

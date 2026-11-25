@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # Run by hand to try the builds; only a tag publishes.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    name: Build ${{ matrix.name }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        include:
+          - { name: linux-x86_64, os: ubuntu-24.04, bin: pixzip }
+          - { name: linux-arm64, os: ubuntu-24.04-arm, bin: pixzip }
+          - { name: macos-universal, os: macos-latest, bin: pixzip }
+          - { name: windows-x86_64, os: windows-latest, bin: pixzip.exe }
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCES: main.c pixzip.c encode.c lodepng/lodepng.c
+    steps:
+      - uses: actions/checkout@v7
+      - if: runner.os == 'Windows'
+        uses: ./.github/actions/msvc
+      # Static against musl, so the binary runs on any distribution.
+      - name: Build
+        if: runner.os == 'Linux'
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get install -y --no-install-recommends musl-tools ||
+            { sudo apt-get update && sudo apt-get install -y --no-install-recommends musl-tools; }
+          musl-gcc -std=c11 -O2 -static -s $SOURCES -o pixzip
+      - name: Build
+        if: runner.os == 'macOS'
+        run: cc -std=c11 -O2 -arch arm64 -arch x86_64 -mmacosx-version-min=11.0 $SOURCES -o pixzip
+      # PowerShell, since Git Bash's own link.exe would shadow MSVC's. /MT
+      # links the C runtime in, so no Visual C++ redistributable is needed.
+      - name: Build
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: cl /nologo /O2 /MT $env:SOURCES.Split(' ') /Fe:pixzip.exe
+      # A picture packed, unpacked and packed again makes the same file.
+      - name: Smoke test
+        run: |
+          ./${{ matrix.bin }} pack corpus/tiny-town.png a.pxz
+          ./${{ matrix.bin }} unpack a.pxz b.png
+          ./${{ matrix.bin }} pack b.png c.pxz
+          cmp a.pxz c.pxz
+          ./${{ matrix.bin }} compare corpus/tiny-town.png
+      - name: Package
+        run: |
+          dir="pixzip-${GITHUB_REF_NAME}-${{ matrix.name }}"
+          mkdir "$dir"
+          cp ${{ matrix.bin }} LICENSE README.md FORMAT.md pixzip.h pixzip.c "$dir"/
+          if [ "${{ runner.os }}" = Windows ]; then 7z a -tzip "$dir.zip" "$dir"; else tar czf "$dir.tar.gz" "$dir"; fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            pixzip-*.tar.gz
+            pixzip-*.zip
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      # The change log is every commit since the previous tag.
+      - name: Write the change log
+        run: |
+          previous=$(git describe --tags --abbrev=0 "$GITHUB_REF_NAME^" 2>/dev/null || true)
+          {
+            echo "## Changes"
+            echo
+            git log --reverse --format='- %s (%h)' "${previous:+$previous..}$GITHUB_REF_NAME"
+            if [ -n "$previous" ]; then
+              echo
+              echo "**Full diff**: https://github.com/$GITHUB_REPOSITORY/compare/$previous...$GITHUB_REF_NAME"
+            fi
+          } > notes.md
+          cat notes.md
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist && sha256sum pixzip-* > SHA256SUMS && cd ..
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file notes.md dist/*
