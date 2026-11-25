@@ -107,7 +107,7 @@ if subprocess.run([str(work / "native"), str(work / "cases")]).returncode:
     bad += 1
 distinct = len({(w, h, bytes(px)) for _, w, h, _, px, _, _, _, _ in got})
 print(f"parity: {len(got) - bad} of {len(got)} pictures match byte for byte ({distinct} distinct), "
-      f"{sum(len(s) for *_, s, _, _ in got):,} stream bytes, largest palette {max(g[3] for g in got)}")
+      f"{sum(len(s) for *_, s, _, _ in got):,} stream bytes, palettes of {min(g[3] for g in got)} to {max(g[3] for g in got)} entries")
 
 if "--sizes" in sys.argv[1:] and not bad:
     files = []

@@ -116,6 +116,11 @@ def picture(w, h, k, kind):
     return px
 
 
+# FORMAT.md's example.
+example = [0, 0, 1, 1, 0, 2, 2, 1, 0, 0, 2, 1]
+assert coded(example, 4, 3, 3, bytes([0, 0, 0, 255, 255, 255, 200, 40, 40]), b"\0") == bytes.fromhex(
+    "50585a01040003000200010007000000" "000000ffffffc82828" "00" "00cd89b389d000"), "FORMAT.md's example"
+
 # The sizes and palettes at every edge: one pixel, one row, one column,
 # 1 to 256 entries, every literal width.
 small = []
