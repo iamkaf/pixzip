@@ -1,4 +1,4 @@
-<p align="center"><img alt="Pixzip: a floppy disk sprite whose pixels run into a zipper and come out the other side as bytes" src="docs/banner.png"></p>
+<p align="center"><img alt="Pixzip: a floppy disk sprite whose pixels run into a zipper and come out the other side as bytes" src=".github/banner.png"></p>
 
 <p align="center">
   <a href="https://github.com/iamkaf/pixzip/actions/workflows/ci.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/iamkaf/pixzip.svg?workflow=ci.yml&amp;branch=main&amp;variant=outline&amp;size=sm&amp;font=geist&amp;mode=dark"><img alt="CI status" src="https://shieldcn.dev/github/ci/iamkaf/pixzip.svg?workflow=ci.yml&amp;branch=main&amp;variant=outline&amp;size=sm&amp;font=geist&amp;mode=light"></picture></a>
