@@ -15,7 +15,11 @@ Pixzip is a lossless codec for palette pictures: pixel art, sprites, tile sheets
 
 Pixzip was built for Pinion, a game that has to fit on one floppy disk. It is a sibling of [Heddle](https://github.com/iamkaf/heddle), which packs the same game's code.
 
+<p align="center"><img alt="Three of Kenney's CC0 sprite sheets at 2 and 3 times their size: Tiny Town, Pixel Shmup tiles and Pixel Shmup ships. Pixzip packs them 25%, 31% and 33% smaller than oxipng." src=".github/readme/gallery.png"></p>
+
 ## How small
+
+<p align="center"><img alt="Bar charts of total size in bytes. On the public corpus: GIF 143,527, PNG 89,301, oxipng 80,155, zopflipng 80,137, WebP 76,806, Pixzip 70,362. On 65 Pinion pictures: GIF 194,676, PNG 186,414, zopflipng 174,074, oxipng 172,746, WebP 158,900, Pixzip 141,588." src=".github/readme/sizes.png"></p>
 
 | Picture | Pixels | Colours | PNG | oxipng | zopflipng | WebP | GIF | Pixzip |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -127,17 +131,11 @@ If your pictures are known, keep a static table of the size they need. If not, a
 
 Pixel art repeats its neighbours. So Pixzip codes each pixel as a few yes-or-no questions:
 
-1. Is it the same as the pixel to the west?
-2. If not, is it the pixel to the north?
-3. If not, is it the pixel to the north-east?
-4. If not, spell out its palette index, one bit at a time.
+<p align="center"><img alt="A zoomed grid of pixels decoded so far, with the next pixel marked and its west, north and north-east neighbours labelled. Beside it, the four questions: 1, same as W? 2, same as N, asked only when N differs from W? 3, same as NE, asked only when NE differs from both? 4, spell the index one bit at a time, in a tree chosen by N's colour." src=".github/readme/questions.png"></p>
 
 An adaptive binary range coder, [the one LZMA uses](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Markov_chain_algorithm), codes the answers. Each probability is 11 bits and moves 1/16 of the way towards every answer it sees.
 
-Each question is asked in a context, so the coder learns what usually happens where:
-
-- **The west and north questions** use which nearby pixels are equal to each other, plus the column's parity, which helps with dithering.
-- **The north-east question and the index bits** use the north pixel's colour, since a colour tends to sit next to the same few colours.
+Each question is asked in a context, so the coder learns what usually happens where. The column's parity in the first two helps with dithering.
 
 The encoder also codes the picture backwards, from the bottom right, and keeps the shorter stream.
 
