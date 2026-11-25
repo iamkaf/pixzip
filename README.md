@@ -1,12 +1,10 @@
-<!-- banner -->
+<p align="center"><img alt="Pixzip: a floppy disk sprite whose pixels run into a zipper and come out the other side as bytes" src="docs/banner.png"></p>
 
 <p align="center">
   <a href="https://github.com/iamkaf/pixzip/actions/workflows/ci.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/iamkaf/pixzip.svg?workflow=ci.yml&amp;branch=main&amp;variant=outline&amp;size=sm&amp;font=geist&amp;mode=dark"><img alt="CI status" src="https://shieldcn.dev/github/ci/iamkaf/pixzip.svg?workflow=ci.yml&amp;branch=main&amp;variant=outline&amp;size=sm&amp;font=geist&amp;mode=light"></picture></a>
   <a href="https://github.com/iamkaf/pixzip/releases"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/release/iamkaf/pixzip.svg?variant=outline&amp;size=sm&amp;font=geist&amp;mode=dark"><img alt="Latest release" src="https://shieldcn.dev/github/release/iamkaf/pixzip.svg?variant=outline&amp;size=sm&amp;font=geist&amp;mode=light"></picture></a>
   <a href="LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/license-MIT.svg?variant=outline&amp;size=sm&amp;font=geist&amp;mode=dark"><img alt="MIT license" src="https://shieldcn.dev/badge/license-MIT.svg?variant=outline&amp;size=sm&amp;font=geist&amp;mode=light"></picture></a>
 </p>
-
-# Pixzip
 
 Pixzip is a lossless codec for palette pictures: pixel art, sprites, tile sheets and portraits of up to 256 colours. Its decoder is about 1.4 KB of freestanding C. It was built for Pinion, a game that has to fit on one floppy disk, and on Pinion's pictures it comes out 18% smaller than oxipng and 11% smaller than lossless WebP. The format is documented bit for bit in [FORMAT.md](FORMAT.md).
 
