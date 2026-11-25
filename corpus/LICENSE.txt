@@ -1,0 +1,15 @@
+The pictures in this directory are by Kenney (www.kenney.nl), released
+under Creative Commons Zero, CC0 1.0:
+http://creativecommons.org/publicdomain/zero/1.0/
+
+They are copied unchanged from these packs, as published on
+opengameart.org:
+
+    tiny-dungeon.png        Tiny Dungeon 1.0, Tilemap/tilemap_packed.png
+    tiny-dungeon-scene.png  Tiny Dungeon 1.0, Sample.png
+    tiny-town.png           Tiny Town 1.1, Tilemap/tilemap_packed.png
+    one-bit.png             1-Bit Pack 1.1, Tilesheet/colored_packed.png
+    one-bit-clear.png       1-Bit Pack 1.1, Tilesheet/colored_transparent_packed.png
+    micro-roguelike.png     Micro Roguelike 1.2, Tilemap/colored_tilemap_packed.png
+    shmup-ships.png         Pixel Shmup 1.0, Tilemap/ships_packed.png
+    shmup-tiles.png         Pixel Shmup 1.0, Tilemap/tiles_packed.png
